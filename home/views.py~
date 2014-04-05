@@ -1,0 +1,35 @@
+from django.shortcuts import render, HttpResponseRedirect
+from hackny.models import SiteTrafficTracker, PotentialMember
+
+# Create your views here.
+
+try: 
+    traffic_tracker = SiteTrafficTracker.objects.all()[0]
+except: 
+    traffic_tracker = SiteTrafficTracker()
+    traffic_tracker.save()    
+
+def index(request):
+    submitted = False
+
+    if request.POST:
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        company = request.POST.get('company')
+
+        new_member = PotentialMember(name=name, email=email, isHospital=(company=='hospital'))
+        new_member.save()
+        traffic_tracker.increment_splash()
+        traffic_tracker.save()
+        submitted = True
+        
+
+    traffic_tracker.increment_visited()
+    traffic_tracker.save()
+
+    return render(request, "index.html", {
+        'tracker' : traffic_tracker, 
+        'submitted' : submitted,
+        'numHospital' : len(PotentialMember.objects.filter(isHospital=True)),
+        'numManufacturer' : len(PotentialMember.objects.filter(isHospital=False)),
+    })
