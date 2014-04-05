@@ -11,6 +11,13 @@
         <link href='http://fonts.googleapis.com/css?family=Open+Sans|Kaushan+Script|Orbitron|Belgrano' rel='stylesheet' type='text/css'>
     </head>
     <body>
+        <form action="/echo" method="post">
+            {% csrf_token %}
+            <input type="text" name="user_input" placeholder="TYPE WHAT YOU WANT HERE"> </input>
+            <input type="submit" value="ECHO BACK"> </input>
+        </form>
+
+        {{ echo }}
         <script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
     </body>
 </html>

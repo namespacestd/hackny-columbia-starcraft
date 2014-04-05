@@ -1,49 +1,38 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 import logging
 
 logger = logging.getLogger('root.' + __name__)
 
-'''class SiteTrafficTracker(models.Model):
-    total_visited = models.IntegerField(default=0)
-    num_splash_click = models.IntegerField(default=0)
+class UserAccount(models.Model):
+    user = models.ForeignKey(User)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=50)
+    reliability = models.IntegerField()
 
-    def increment_visited(self):
-        self.total_visited+=1
+class SellerItem(models.Model):
+    DINING_HALLS = (
+        ('john-jay', 'john-jay'),
+        ('ferris', 'ferris'),
+        ('jjs', 'jjs'),
+    )
 
-    def increment_splash(self):
-        self.num_splash_click+=1
+    price = models.FloatField()
+    time_start = models.TimeField()
+    time_end = models.TimeField()
+    dining_hall = models.CharField(max_length=15, choices=DINING_HALLS, default='john-jay')
+    is_sold = models.BooleanField(default=False)
+    user = models.ForeignKey(UserAccount)
 
-class PotentialMember(models.Model):
-    name = models.CharField(max_length=50)
-    email = models.EmailField()
-    isHospital = models.BooleanField(default=True)
-'''
-'''
-class UserList(models.Model):
-    user = models.ForeignKey(Profile, null=False)
-    list_name = models.CharField(max_length=30)
-    can_delete = models.BooleanField(null=False, default=True)
-
-    @staticmethod
-    def create_default_lists(user):
-        logger.info("Creating default user lists for user %s", user)
-        watched = UserList(user=user, list_name='Watched', can_delete=False)
-        watched.save()
-        planning = UserList(user=user, list_name='Planning to Watch', can_delete=False)
-        planning.save()
-
-    def __str__(self):
-        return "".join([str(self.user), ":", str(self.list_name)])
-
-
-class UserListItem(models.Model):
-    user_list = models.ForeignKey(UserList, null=False)
-    movie = models.ForeignKey(Movie, null=False)
-    rating = models.ForeignKey(Rating, null=False)
-
-    def __str__(self):
-        return "".join([str(self.movie), " {", str(self.user_list), "}"])
-
-'''
-
+class Transaction(models.Model):
+    PAYMENT_OPTION = (
+        ('cash', 'cash'),
+        ('paypal', 'paypal'),
+    )
+    meal = models.ForeignKey(SellerItem)
+    buyer = models.ForeignKey(UserAccount)
+    payment_option = models.CharField(max_length=15, choices=PAYMENT_OPTION, default='cash')
+    designated_time = models.TimeField()
+    paid = models.BooleanField(default=False)
